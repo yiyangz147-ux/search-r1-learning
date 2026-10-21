@@ -1,0 +1,26 @@
+{
+  "evaluation_name": "GRPO reserved 2000: Qwen3-4B-Base + best SFT LoRA checkpoint-320",
+  "model_path": "/srv/models/Qwen3-4B-Base",
+  "adapter_path": "/srv/search-r1/evaluation_artifacts/checkpoint320_best_lora",
+  "data_file": "/srv/teacher/search-r1/data/sft/selection_3000_clean/grpo.jsonl",
+  "expected_data_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "training_prepared_dir": "/srv/search-r1/prepared/aether_plus_deepseek100_base_4k_v1",
+  "output_dir": "/srv/search-r1/evaluations/grpo2000_ckpt320_searchr1_b32_v2",
+  "selected_gpu_uuids": [
+    "GPU-00000000-0000-0000-0000-000000000001",
+    "GPU-00000000-0000-0000-0000-000000000004",
+    "GPU-00000000-0000-0000-0000-000000000003",
+    "GPU-00000000-0000-0000-0000-000000000002"
+  ],
+  "seed": 1,
+  "batch_size": 32,
+  "max_searches": 3,
+  "topk": 3,
+  "passage_chars": 1800,
+  "max_new_tokens": 512,
+  "max_context_tokens": 8192,
+  "max_total_generated_tokens": 2048,
+  "retriever_url": "http://127.0.0.1:8000/retrieve",
+  "retrieval_timeout_seconds": 180,
+  "retrieval_retries": 2
+}

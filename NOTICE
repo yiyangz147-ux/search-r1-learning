@@ -1,0 +1,13 @@
+Search-R1 Learning is a code-only educational project.
+
+The Search-R1 project (https://github.com/PeterGriffinJin/Search-R1) informs the
+prompt, tool protocol, reward conventions and experimental comparisons.
+The GRPO integration targets the external verl v0.6.1 project
+(https://github.com/volcengine/verl). The full upstream framework is not bundled.
+
+Reference evaluator code, its exact source metadata and license notices are
+preserved in tests/fixtures/official_qa_metrics/.
+
+Public datasets, Wikipedia, model weights, retrieval indexes and generated
+artifacts are not distributed here. Obtain them separately from their respective
+publishers and follow their applicable terms and licenses.

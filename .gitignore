@@ -1,0 +1,25 @@
+# Deny by default. A forced git add still requires the verifier below.
+*
+!/.gitignore
+!/README.md
+!/RAG_GUIDE.md
+!/SFT_GUIDE.md
+!/LICENSE
+!/LICENSE.txt
+!/NOTICE
+!/requirements*.txt
+!/scripts/
+!/scripts/*.py
+!/scripts/*.sh
+!/tests/
+!/tests/**/
+!/tests/**/*.py
+!/tests/fixtures/official_qa_metrics/NOTICE.md
+!/tests/fixtures/official_qa_metrics/*.LICENSE.txt
+!/tests/fixtures/official_qa_metrics/sources.json
+!/configs/
+!/configs/*.json
+!/configs/*.yaml
+!/configs/*.yml
+!/docs/
+!/docs/*.md

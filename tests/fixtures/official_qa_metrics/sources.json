@@ -1,0 +1,48 @@
+{
+  "retrieved_at_utc": "2026-10-16",
+  "purpose": "Pinned, unmodified official source snapshots for offline AST-only differential tests. Not imported as modules.",
+  "sources": {
+    "nq_open_orqa": {
+      "repository": "google-research/language",
+      "commit": "e2b407d154bdbfa4a0718e68cefa4aa1a28c2471",
+      "path": "language/orqa/utils/eval_utils.py",
+      "snapshot": "google_orqa_eval_utils.py",
+      "source_url": "https://github.com/google-research/language/blob/e2b407d154bdbfa4a0718e68cefa4aa1a28c2471/language/orqa/utils/eval_utils.py",
+      "download_url": "https://raw.githubusercontent.com/google-research/language/e2b407d154bdbfa4a0718e68cefa4aa1a28c2471/language/orqa/utils/eval_utils.py",
+      "sha256": "836ebd62fc7f7e9b16bdb21dd0a24945e16dd67aa25defcac2c7500f9705a1d8",
+      "license": "Apache-2.0",
+      "license_path": "LICENSE",
+      "license_snapshot": "nq_open_orqa.LICENSE.txt",
+      "license_source_url": "https://github.com/google-research/language/blob/e2b407d154bdbfa4a0718e68cefa4aa1a28c2471/LICENSE",
+      "license_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "hotpotqa": {
+      "repository": "hotpotqa/hotpot",
+      "commit": "fa3a36370899e1d85822de61e58c85ea19993154",
+      "path": "hotpot_evaluate_v1.py",
+      "snapshot": "hotpot_evaluate_v1.py",
+      "source_url": "https://github.com/hotpotqa/hotpot/blob/fa3a36370899e1d85822de61e58c85ea19993154/hotpot_evaluate_v1.py",
+      "download_url": "https://raw.githubusercontent.com/hotpotqa/hotpot/fa3a36370899e1d85822de61e58c85ea19993154/hotpot_evaluate_v1.py",
+      "sha256": "d35fc91a6db21d791dbdda11daf3856e9359f5701d54e3eefba20d88fecc02c0",
+      "license": "Apache-2.0",
+      "license_path": "LICENSE.txt",
+      "license_snapshot": "hotpotqa.LICENSE.txt",
+      "license_source_url": "https://github.com/hotpotqa/hotpot/blob/fa3a36370899e1d85822de61e58c85ea19993154/LICENSE.txt",
+      "license_sha256": "9c264489d021e5905c0544f75e292c63f78dca56acd2aec395dd36dcc41940c7"
+    },
+    "search_r1": {
+      "repository": "PeterGriffinJin/Search-R1",
+      "commit": "068516be64388adf17734628eb84ba768934f720",
+      "path": "verl/utils/reward_score/qa_em.py",
+      "snapshot": "search_r1_qa_em.py",
+      "source_url": "https://github.com/PeterGriffinJin/Search-R1/blob/068516be64388adf17734628eb84ba768934f720/verl/utils/reward_score/qa_em.py",
+      "download_url": "https://raw.githubusercontent.com/PeterGriffinJin/Search-R1/068516be64388adf17734628eb84ba768934f720/verl/utils/reward_score/qa_em.py",
+      "sha256": "1c9f5e2b2f868dc265b943d27d783baf6f275ca6f9ec854235fc29b0c0fde039",
+      "license": "Apache-2.0",
+      "license_path": "LICENSE",
+      "license_snapshot": "search_r1.LICENSE.txt",
+      "license_source_url": "https://github.com/PeterGriffinJin/Search-R1/blob/068516be64388adf17734628eb84ba768934f720/LICENSE",
+      "license_sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  }
+}

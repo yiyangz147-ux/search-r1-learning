@@ -1,0 +1,10 @@
+# verl v0.6.1 reads this file independently, so it must be a top-level list.
+# Budgets come from the main trainer config's search_r1 section, via
+# search_config_from_trainer(); do not duplicate or interpolate them here.
+- name: search_r1_base
+  _target_: search_grpo_agent_loop.SearchR1AgentLoop
+  search_config:
+    # Cross-worker Ray broker; one serial HTTP stream to the existing E5 service.
+    # Wait briefly to reach FAISS's >=20-query batched BLAS path when possible.
+    retrieval_batch_wait_seconds: 0.5
+    retrieval_max_batch_size: 64

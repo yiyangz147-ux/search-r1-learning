@@ -1,0 +1,11 @@
+{
+  "model_path": "/srv/models/Qwen3-4B-Base",
+  "aether_dir": "/srv/data-preparation/search-r1/data/sft/aethersearch_qwen3_4b_base_v1",
+  "generated_run_dir": "/srv/teacher/search-r1/data/sft/deepseek_v4_1_grounded_100_v1",
+  "protected_qa_val": "/srv/teacher/search-r1/data/sft/selection_100_clean/val.parquet",
+  "protected_grpo": "/srv/teacher/search-r1/data/sft/selection_3000_clean/grpo.jsonl",
+  "prepared_dir": "/srv/search-r1/prepared/aether_plus_deepseek100_base_4k_v1",
+  "max_length": 4096,
+  "expected_new_episodes": 100,
+  "seed": 1
+}

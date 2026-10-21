@@ -1,0 +1,20 @@
+{
+  "allowed_gpu_uuids": [
+    "GPU-00000000-0000-0000-0000-000000000001",
+    "GPU-00000000-0000-0000-0000-000000000004",
+    "GPU-00000000-0000-0000-0000-000000000003",
+    "GPU-00000000-0000-0000-0000-000000000002"
+  ],
+  "physical_index_by_uuid": {
+    "GPU-00000000-0000-0000-0000-000000000001": 2,
+    "GPU-00000000-0000-0000-0000-000000000004": 3,
+    "GPU-00000000-0000-0000-0000-000000000003": 4,
+    "GPU-00000000-0000-0000-0000-000000000002": 5
+  },
+  "gpu3_uuid": "GPU-00000000-0000-0000-0000-000000000004",
+  "gpu3_confirmed": false,
+  "min_free_memory_mib": 20000,
+  "notice_source": "/etc/motd",
+  "notice": "Example only: verify the selected GPUs are available before use.",
+  "confirmation_status": "Example only; configure your own GPU UUIDs and confirm availability locally."
+}

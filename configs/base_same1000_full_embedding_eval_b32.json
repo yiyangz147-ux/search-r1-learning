@@ -1,0 +1,37 @@
+{
+  "evaluation_name": "Historical Base same 1000 questions: SFT final324 qv LoRA + full tied embedding; active32/model-microbatch8",
+  "model_path": "/srv/models/Qwen3-4B-Base",
+  "adapter_path": "/srv/search-r1/outputs/qwen3_4b_base_aether_new100_lora_r32_qv_full_embedding_v2/final_adapter",
+  "data_file": "/srv/data-preparation/search-r1/data/eval/qwen3_4b_base_paired_1000/selected.jsonl",
+  "expected_data_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "expected_count": 1000,
+  "expected_source_counts": {
+    "nq": 500,
+    "hotpotqa": 500
+  },
+  "training_prepared_dir": "/srv/search-r1/prepared/aether_plus_deepseek100_base_4k_v2",
+  "reward_monitor_file": "/srv/search-r1/prepared/aether_plus_deepseek100_base_4k_v2/reward_monitor.jsonl",
+  "output_dir": "/srv/search-r1/evaluations/base_same1000_sft324_full_embedding_rag_b32_v2",
+  "selected_gpu_uuids": [
+    "GPU-00000000-0000-0000-0000-000000000001",
+    "GPU-00000000-0000-0000-0000-000000000004",
+    "GPU-00000000-0000-0000-0000-000000000003",
+    "GPU-00000000-0000-0000-0000-000000000002"
+  ],
+  "num_workers": 4,
+  "seed": 1,
+  "batch_size": 32,
+  "max_searches": 3,
+  "topk": 3,
+  "passage_chars": 1800,
+  "max_new_tokens": 512,
+  "max_context_tokens": 8192,
+  "max_total_generated_tokens": 2048,
+  "max_turns": 6,
+  "max_invalid_actions": 2,
+  "retriever_url": "http://127.0.0.1:8000/retrieve",
+  "retrieval_timeout_seconds": 180,
+  "retrieval_retries": 2,
+  "require_no_training_overlap": true,
+  "generation_microbatch_size": 8
+}

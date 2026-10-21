@@ -1,0 +1,247 @@
+# 本文件是主要可读参数表；最终使用值须以 outputs/.../resolved_config.yaml 为准。
+# 基准：Search-R1 598e61bd 的 scripts/nq_hotpotqa/v0.2/train_grpo.sh。
+# 兼容实现：独立安装的 verl v0.6.1。旧 SFT / 检索环境不变。
+defaults:
+  - ppo_trainer
+  - _self_
+
+hydra:
+  searchpath:
+    - file://${oc.env:SEARCH_GRPO_ROOT,/srv/search-r1}/vendor/verl-0.6.1/verl/trainer/config
+  job:
+    chdir: false
+
+# 自定义数据准备、工具循环、监控和最终测试读取此段；不是 verl 原生字段。
+search_r1:
+  root: ${oc.env:SEARCH_GRPO_ROOT,/srv/search-r1}
+  seed: 1
+  physical_gpus: [2, 3, 4, 5]
+  official_search_r1_commit: 598e61bd1d36895726d28a8d06b3a15bed19f5d3
+  verl_version: 0.6.1
+  expected_train_count: 2000
+  expected_val_count: 200
+  expected_test_count: 1000
+  test_file: ${search_r1.root}/prepared/grpo2000_sft324_v1/test.parquet
+  train_manifest: ${search_r1.root}/prepared/grpo2000_sft324_v1/data_manifest.json
+  # 本轮只以独立 dev EM 选择 checkpoint；测试集不用于调参或选 checkpoint。
+  best_checkpoint_metric: val/answer_em
+  best_checkpoint_mode: max
+  # 下列预算沿用上次 1,000 题 SFT 评测，保持比较条件。
+  max_new_tokens_per_action: 512
+  max_generated_tokens_per_question: 2048
+  max_context_tokens: 8192
+  max_searches: 3
+  top_k: 3
+  max_turns: 6
+  max_invalid_actions: 2
+  max_chars_per_passage: 1800
+  retrieval_url: http://127.0.0.1:8000/retrieve
+  retrieval_timeout_seconds: 180
+  retrieval_retries: 2
+  format_reward_weight: 0.0
+  wandb_entity: your-wandb-entity
+  final_test_only_after_selection: true
+
+data:
+  train_files: ${search_r1.root}/prepared/grpo2000_sft324_v1/train.parquet
+  val_files: ${search_r1.root}/prepared/grpo2000_sft324_v1/val.parquet
+  train_max_samples: -1
+  val_max_samples: -1
+  prompt_key: prompt
+  reward_fn_key: data_source
+  # 此处是 raw Base prompt 张量容量；准备数据时须断言每条真实 prompt 不超限。
+  max_prompt_length: 1024
+  # 轨迹张量容纳生成 token 和检索观察；2048 生成预算由工具循环另行计算。
+  # 真实 prompt+轨迹始终 <=8192。此值不是一次生成8192 token。
+  # vendor patch v3 在 actor micro=1 时只去除两端 attention padding，返回后恢复此存储宽。
+  max_response_length: 8192
+  # 2000/20=100 个迭代/epoch，完整覆盖全部训练题，不丢尾批。
+  train_batch_size: 20
+  # 200/100=2 个完整验证批次；使共享broker更容易达到FAISS的>=20 query批路径。
+  # n=1 greedy、每引擎max_num_seqs=8均不变；现代val loader drop_last=False。
+  val_batch_size: 100
+  shuffle: true
+  seed: ${search_r1.seed}
+  validation_shuffle: false
+  dataloader_num_workers: 0
+  filter_overlong_prompts: false
+  truncation: error
+  return_raw_input_ids: true
+  return_raw_chat: true
+  return_full_prompt: false
+  return_multi_modal_inputs: false
+  custom_cls:
+    path: ${search_r1.root}/scripts/search_grpo_dataset.py
+    name: SearchR1BaseDataset
+
+actor_rollout_ref:
+  hybrid_engine: true
+  model:
+    # 已包含 SFT LoRA + 完整训练后共享 embedding 的标准 HF 模型。
+    path: ${search_r1.root}/models/qwen3_4b_sft324_merged_grpo_v1
+    tokenizer_path: ${actor_rollout_ref.model.path}
+    trust_remote_code: false
+    use_shm: false
+    custom_chat_template: null
+    override_config:
+      attn_implementation: sdpa
+    enable_gradient_checkpointing: true
+    enable_activation_offload: false
+    use_remove_padding: false
+    use_fused_kernels: false
+    # 新增 GRPO adapter；PEFT 默认 dropout=0、bias=none、初始增量为0。
+    lora_rank: 32
+    lora_alpha: 16
+    target_modules: [q_proj, v_proj]
+    exclude_modules: null
+    lora_adapter_path: null
+  actor:
+    strategy: fsdp
+    # modern verl 把 20 prompts 乘 n=5，再除4卡 =>25条轨迹/卡。
+    # 每卡 micro=1，累积25次；每个训练迭代共一次全局100轨迹的优化更新。
+    ppo_mini_batch_size: 20
+    ppo_micro_batch_size: null
+    ppo_micro_batch_size_per_gpu: 1
+    use_dynamic_bsz: false
+    ppo_max_token_len_per_gpu: 9216
+    use_remove_padding: false
+    use_fused_kernels: false
+    use_torch_compile: false
+    entropy_checkpointing: true
+    entropy_from_logits_with_chunking: false
+    grad_clip: 1.0
+    clip_ratio: 0.2
+    clip_ratio_low: 0.2
+    clip_ratio_high: 0.2
+    # modern 默认3会启用额外dual-clip；ratio<=exp(20)，1e9使此分支永不触发。
+    clip_ratio_c: 1000000000.0
+    policy_loss:
+      loss_mode: vanilla
+    loss_agg_mode: token-mean
+    entropy_coeff: 0.001
+    use_kl_loss: true
+    kl_loss_type: low_var_kl
+    kl_loss_coef: 0.001
+    ppo_epochs: 1
+    shuffle: false
+    optim:
+      optimizer: AdamW
+      optimizer_impl: torch.optim
+      lr: 1.0e-6
+      lr_warmup_steps_ratio: 0.285
+      lr_warmup_steps: -1
+      lr_scheduler_type: constant
+      weight_decay: 0.01
+      betas: [0.9, 0.999]
+      clip_grad: 1.0
+      total_training_steps: 300
+    fsdp_config:
+      param_offload: true
+      optimizer_offload: true
+      model_dtype: bfloat16
+      dtype: bfloat16
+      fsdp_size: 4
+      use_orig_params: false
+      forward_prefetch: false
+    checkpoint:
+      save_contents: [model, optimizer, extra]
+      load_contents: [model, optimizer, extra]
+  ref:
+    # LoRA 模式的 reference 是同一 actor 禁用新增 GRPO adapter 后的合并 SFT 模型。
+    log_prob_micro_batch_size: null
+    log_prob_micro_batch_size_per_gpu: 1
+    log_prob_use_dynamic_bsz: false
+    use_torch_compile: false
+    fsdp_config:
+      param_offload: true
+      model_dtype: bfloat16
+      dtype: bfloat16
+  rollout:
+    name: vllm
+    mode: async
+    dtype: bfloat16
+    tensor_model_parallel_size: 1
+    data_parallel_size: 1
+    pipeline_model_parallel_size: 1
+    temperature: 1.0
+    top_p: 0.95
+    top_k: -1
+    do_sample: true
+    n: 5
+    prompt_length: ${data.max_prompt_length}
+    response_length: ${data.max_response_length}
+    max_model_len: 8192
+    gpu_memory_utilization: 0.45
+    max_num_seqs: 8
+    max_num_batched_tokens: 8192
+    enforce_eager: true
+    free_cache_engine: true
+    ignore_eos: false
+    enable_chunked_prefill: true
+    enable_prefix_caching: true
+    load_format: dummy
+    log_prob_micro_batch_size: null
+    log_prob_micro_batch_size_per_gpu: 1
+    log_prob_use_dynamic_bsz: false
+    calculate_log_probs: false
+    over_sample_rate: 0
+    agent:
+      num_workers: 4
+      default_agent_loop: search_r1_base
+      agent_loop_config_path: ${search_r1.root}/configs/search_grpo_agent_loop_v1.yaml
+    multi_turn:
+      enable: true
+      max_assistant_turns: 6
+      max_user_turns: 5
+      use_inference_chat_template: false
+    val_kwargs:
+      temperature: 0.0
+      top_p: 1.0
+      top_k: -1
+      do_sample: false
+      n: 1
+
+algorithm:
+  adv_estimator: grpo
+  norm_adv_by_std_in_grpo: true
+  use_kl_in_reward: false
+  rollout_correction:
+    rollout_is: null
+    rollout_rs: null
+    bypass_mode: false
+    use_policy_gradient: false
+
+reward_model:
+  enable: false
+  reward_manager: naive
+  launch_reward_fn_async: false
+
+custom_reward_function:
+  path: ${search_r1.root}/scripts/search_grpo_reward.py
+  name: compute_score
+
+trainer:
+  project_name: search-r1-qwen3-4b-lora-grpo
+  experiment_name: qwen3_4b_sft324_grpo_qv_r32_v1
+  logger: [console, wandb]
+  total_epochs: 3
+  total_training_steps: 300
+  nnodes: 1
+  n_gpus_per_node: 4
+  val_before_train: true
+  test_freq: 50
+  save_freq: 50
+  # 保留每次 dev 对应的权重，最终由独立 dev EM 选择；不能只保留最新。
+  max_actor_ckpt_to_keep: null
+  resume_mode: auto
+  use_legacy_worker_impl: enable
+  balance_batch: true
+  default_local_dir: ${search_r1.root}/outputs/qwen3_4b_sft324_grpo_qv_r32_v1
+  default_hdfs_dir: null
+  log_val_generations: 0
+  rollout_data_dir: ${trainer.default_local_dir}/rollouts
+  validation_data_dir: ${trainer.default_local_dir}/validation
+
+ray_kwargs:
+  ray_init:
+    num_cpus: 16

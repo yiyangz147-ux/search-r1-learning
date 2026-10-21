@@ -1,0 +1,7 @@
+# Official QA metric reference snapshots
+
+The source files in this directory are unmodified snapshots from the three upstream repositories identified in `sources.json`, pinned to the commits that last changed each evaluator file. Full Apache 2.0 license copies are included alongside the snapshots. Original notices in each source file are retained. The Google snapshot is copyright 2018 The Google AI Language Team Authors; the Search-R1 snapshot is copyright 2024 Bytedance Ltd. and/or its affiliates. The HotpotQA repository distributes its evaluator under its included Apache 2.0 license.
+
+Tests parse these snapshots with Python AST and execute only the explicitly selected pure normalization and scoring functions, supplying standard-library dependencies. They never import TensorFlow, ujson, or the complete upstream modules, and never access the network.
+
+`Search-R1.subem_check` uses normalized **character** containment. It can accept negations, competing answers, substrings inside words, and empty normalized gold answers. The project reports that value only as an upstream diagnostic; it is not exact match and does not make a trajectory pass. NQ-open's official primary metric is normalized exact match. Any NQ token F1 reported by this project is an auxiliary diagnostic. The local scoring wrapper separately marks a raw empty prediction invalid, whereas upstream pure exact-match functions compare normalized strings directly.

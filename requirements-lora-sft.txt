@@ -1,0 +1,13 @@
+# Match the server's cached CUDA 12.1 runtime; do not upgrade the inference env.
+# setup_lora_sft_env.sh installs these four packages from local wheels first.
+torch==2.5.1+cu121
+transformers==4.51.3
+tokenizers==0.21.4
+numpy==1.26.4
+
+# LoRA, distributed Trainer, experiment tracking, and Parquet data loading.
+peft==0.15.2
+accelerate==1.6.0
+# Supports the newer W&B API-key format; 0.19.11 rejects 86-character keys.
+wandb==0.26.1
+pyarrow==23.0.1
